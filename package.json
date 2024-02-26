@@ -1,0 +1,23 @@
+{
+  "name": "webcrawle",
+  "version": "1.0.0",
+  "description": "webcrawler",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node main.mjs",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/PavoX20/WebCrawlerScrapingNODEJS.git"
+  },
+  "author": "Pablo Sarzosa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PavoX20/WebCrawlerScrapingNODEJS/issues"
+  },
+  "homepage": "https://github.com/PavoX20/WebCrawlerScrapingNODEJS#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
