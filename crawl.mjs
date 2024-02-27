@@ -1,8 +1,8 @@
 import jsdon from "jsdom";
 import fs from "node:fs/promises";
 
-// Función para extraer la información
-export function extractInfo(htmlContent) {
+// Función para extraer la información de un documento HTML
+ function extractInfo(htmlContent) {
   const dom = new jsdon.JSDOM(htmlContent);
   const document = dom.window.document;
 
@@ -47,7 +47,8 @@ export function extractInfo(htmlContent) {
   return entries;
 }
 
-export async function fetchHTML(url) {
+// Función para hacer un fetch de datos y obtener el cuerpo de la respuesta como texto
+ async function fetchHTML(url) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -62,7 +63,8 @@ export async function fetchHTML(url) {
   }
 }
 
-export async function saveHTMLToFile(url, filePath) {
+// Función para guardar el HTML en un archivo
+ async function saveHTMLToFile(url, filePath) {
   try {
     const html = await fetchHTML(url);
     if (html) {
@@ -73,3 +75,39 @@ export async function saveHTMLToFile(url, filePath) {
     console.error("Error saving HTML to file: ", error);
   }
 }
+
+// Función para ordenar el vector de objetos JSON por una propiedad específica
+ function sortByProperty(vector, propiedad) {
+  return vector.sort((a, b) => {
+    // Convertimos los valores de las propiedades a números si es necesario
+    const valorA = isNaN(a[propiedad])
+      ? a[propiedad]
+      : parseFloat(a[propiedad]);
+    const valorB = isNaN(b[propiedad])
+      ? b[propiedad]
+      : parseFloat(b[propiedad]);
+
+    // Comparamos los valores de las propiedades y retornamos el resultado de la comparación
+    if (valorA < valorB) return -1;
+    if (valorA > valorB) return 1;
+    return 0;
+  });
+}
+
+// Función para filtrar los objetos del vector por la longitud de la propiedad 'title'
+ function filterByWordRangeInTitle(
+  vector,
+  minPalabras,
+  maxPalabras = 40
+) {
+  return vector.filter((item) => {
+    // Dividimos el título en palabras y contamos cuántas palabras tiene
+    const palabrasEnTitulo = item.title.split(" ");
+    const numPalabras = palabrasEnTitulo.length;
+    // Retornamos true si el número de palabras está dentro del intervalo especificado
+    return numPalabras >= minPalabras && numPalabras <= maxPalabras;
+  });
+}
+
+
+export default { fetchHTML, saveHTMLToFile, extractInfo, sortByProperty, filterByWordRangeInTitle };

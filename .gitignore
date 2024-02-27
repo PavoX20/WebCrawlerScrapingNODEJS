@@ -1,1 +1,3 @@
 node_modules/
+crawler.test.mjs
+jest.test.mjs
