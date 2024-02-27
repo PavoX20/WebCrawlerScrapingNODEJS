@@ -4,7 +4,7 @@
   "description": "webcrawler",
   "main": "index.js",
   "scripts": {
-    "dev": "node --no-warnings main.mjs",
+    "start": "node --no-warnings main.mjs",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "repository": {

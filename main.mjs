@@ -38,6 +38,8 @@ async function main(){
     console.log("Ejercicio 1: ");
     console.log(orderedValuesByCommentsAndBy6orMoreWordsInTitle);
 
+    console.log("\n\n");
+
     console.log("Ejercicio 2: ");
     console.log(filteredBy1To5WordsTitle);
 
