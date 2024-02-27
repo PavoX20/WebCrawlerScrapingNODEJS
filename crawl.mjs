@@ -1,57 +1,75 @@
-import { JSDOM } from "jsdom";
+import jsdon from "jsdom";
+import fs from "node:fs/promises";
 
-export function crawlPage(currentURL) {
-  console.log(`actively ${currentURL}`);
-  
-    fetch(currentURL)
-    .then((response) => {
+// Función para extraer la información
+export function extractInfo(htmlContent) {
+  const dom = new jsdon.JSDOM(htmlContent);
+  const document = dom.window.document;
 
-      if (!response.ok) {
-        console.log('Error in fetching on: '+currentURL+' with status: '+response.status+' '+response.statusText);
-        return (process.exit(1));
+  const entries = [];
+  const items = document.querySelectorAll("tr.athing");
+
+  items.forEach((item, index) => {
+    const rank = item
+      .querySelector("td.title > span.rank")
+      .textContent.trim()
+      .replace(".", "");
+    const title = item.querySelector("td.title a").textContent.trim();
+
+    const subtext = item.nextSibling.querySelector("td.subtext");
+    const points = subtext.querySelector("span.score")
+      ? subtext.querySelector("span.score").textContent.split(" ")[0]
+      : "0";
+
+    const commentsLink = subtext.querySelector(
+      "span.subline > a[href*='item?id=']"
+    );
+    let comments = "0"; // Inicializamos 'comments' como "0" en caso de que no se encuentre el enlace de comentarios
+
+    if (commentsLink) {
+      // Si se encuentra el enlace de comentarios
+      const commentsText = commentsLink.textContent.trim(); // Obtenemos el texto del enlace y eliminamos los espacios en blanco al principio y al final
+      const commentsMatch = commentsText.match(/^(\d+)\s*comments$/); // Utilizamos una expresión regular para extraer el número de comentarios
+      if (commentsMatch) {
+        // Si se encuentra un número válido de comentarios
+        comments = commentsMatch[1]; // Actualizamos 'comments' con el número de comentarios extraído
       }
-
-      const contentType = response.headers.get("content-type");
-      if(!contentType.includes('text/html')){
-        console.log('Non HTML response, content type: '+contentType+' with status: '+response.status+' '+response.statusText);
-        return (process.exit(1));
-      }
-
-      return response.text();
-    })
-    .then((htmlBody) => {
-      console.log(htmlBody);
-    })
-    .catch((error) => console.log('Error in fetching on: '+currentURL));
-  
-}
-
-export function getURLsFromPage(htmlBody, baseURL) {
-  const urls = [];
-  const dom = new JSDOM(htmlBody);
-  const linkElements = dom.window.document.querySelectorAll("a");
-
-  for (const linkElement of linkElements) {
-    if (linkElement.href.slice(0, 1) === "/") {
-      //Relative
-      urls.push(`${baseURL}${linkElement.href}`);
-    } else if (linkElement.href.slice(0, 4) === "http") {
-      //Absolute
-      urls.push(linkElement.href);
-    } else {
-      //ignore
     }
-  }
 
-  return urls;
+    entries.push({
+      rank,
+      title,
+      points,
+      comments,
+    });
+  });
+
+  return entries;
 }
 
-export function normalizeURL(urlString) {
-  const urlObject = new URL(urlString);
-  const domain = urlObject.hostname;
-  const path = urlObject.pathname.endsWith("/")
-    ? urlObject.pathname.slice(0, -1)
-    : urlObject.pathname;
+export async function fetchHTML(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      // verifica si la respuesta es exitosa (código HTTP 200-299)
+      throw new Error("Network response was not ok");
+    }
+    const html = await response.text(); // obtiene el cuerpo de la respuesta como texto
+    return html;
+  } catch (error) {
+    console.error("Error fetching data: ", error);
+    return null;
+  }
+}
 
-  return `${domain}${path}`;
+export async function saveHTMLToFile(url, filePath) {
+  try {
+    const html = await fetchHTML(url);
+    if (html) {
+      await fs.writeFile(filePath, html, "utf8"); // Guarda el HTML en el archivo especificado
+      console.log(`HTML saved to ${filePath}`);
+    }
+  } catch (error) {
+    console.error("Error saving HTML to file: ", error);
+  }
 }
