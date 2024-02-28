@@ -10,7 +10,7 @@ async function main(){
     }).catch((error) => console.log('Error in fetching on: '+currentURL));
     
     // Guarda el HTML de Hacker News en un archivo
-    await crawl.saveHTMLToFile('https://news.ycombinator.com/', '/your/path/to/hackernews.html');
+    //await crawl.saveHTMLToFile('https://news.ycombinator.com/', '/your/path/to/hackernews.html');
 
     //extraer la información del HTML
     const values = crawl.extractInfo(htmlBody);

@@ -25,6 +25,9 @@ Once the dependencies are installed, you can run the web crawler with the follow
 
 This will start the web crawler and display the first 30 entries from Hacker News along with the requested information.
 
+**NOTE:** If you wish to save the page `.html` for viewing, you should uncomment the `crawl.saveHtmlToFile()` function in main and assign a valid path.
+
+
 
 ## Aditional Features
 El web crawler también es capaz de realizar filtrado de las entradas recuperadas:
